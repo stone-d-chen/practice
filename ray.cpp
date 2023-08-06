@@ -5,6 +5,47 @@
 typedef uint32_t u32;
 typedef float f32;
 
+
+#include "math.h"
+
+#define ArrayCount(arr) (( sizeof(arr) ) / ( sizeof(*arr) ))
+
+struct sphere
+{
+    v3f P;
+    f32 r;
+    u32 MatIdx;
+};
+
+struct plane
+{
+    v3f N;
+    f32 d;
+    u32 MatIdx;
+};
+
+struct material
+{
+    v3f Color;
+};
+
+struct world
+{
+    u32 MaterialCount;
+    material *Materials;
+
+    u32 SphereCount;
+    sphere *Spheres;
+
+    u32 PlaneCount;
+    plane *Planes;
+};
+
+
+
+
+
+
 int main(int ArgCount, char **Args)
 {
     bool is_running = false;
@@ -17,12 +58,46 @@ int main(int ArgCount, char **Args)
     u32 Width = 1280;
     u32 Height = 720;
  
-
     SDL_Window   *window   = SDL_CreateWindow(NULL, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, Width, Height, SDL_WINDOW_POPUP_MENU);
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, 0);
     SDL_Texture  *texture  = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, Width, Height);
 
+
+
+
     u32 *Pixels = (u32 *) malloc(Width * Height * sizeof(u32));
+    
+    sphere Spheres[] =  
+    {
+        { {0,0,0}, 1.0 }
+    };
+    plane Planes[] =  
+    {
+        { {0,0,1}, 1}
+    };
+
+    material Materials[]
+    {
+        {0.3, 0.4, 0.5},
+        {0.8, 0.5, 0.1},
+        {0.0, 0.5, 0.1},
+    };
+
+    world World = {};
+
+    World.Spheres = Spheres;
+    World.SphereCount = ArrayCount(Spheres);
+
+    World.Planes = Planes;
+    World.PlaneCount = ArrayCount(Planes);
+
+    World.Materials = Materials;
+    World.MaterialCount = ArrayCount(Materials); 
+
+
+
+
+
 
 
     while(is_running == true)
