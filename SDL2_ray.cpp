@@ -133,7 +133,10 @@ int main(int ArgCount, char **Args)
                 v3f RayOrigin = CameraP;
                 v3f RayDirection = Normalize(-CameraZ * FilmD             +
                                               CameraX * FilmX * HalfFilmW +
-                                              CameraY * FilmY * HalfFilmH  )
+                                              CameraY * FilmY * HalfFilmH  );
+
+
+                Raycast(Pixels, World, RayOrigin, RayDirection);
 
 
 
