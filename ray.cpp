@@ -41,8 +41,10 @@ struct world
     plane *Planes;
 };
 
-
-
+struct camera
+{
+    v3f P;
+};
 
 
 
@@ -83,6 +85,7 @@ int main(int ArgCount, char **Args)
         {0.0, 0.5, 0.1},
     };
 
+
     world World = {};
 
     World.Spheres = Spheres;
@@ -95,13 +98,50 @@ int main(int ArgCount, char **Args)
     World.MaterialCount = ArrayCount(Materials); 
 
 
+    // we need a camera and a film 
+    v3f CameraP = {0, -10, 1};
+    v3f CameraZ = Normalize(CameraP - v3f{0,0,0});
+    v3f Up = {0,0,1}; 
+    v3f CameraX = Normalize(Cross(Up, CameraZ));
+    v3f CameraY = Normalize(Cross(CameraZ, CameraX));
 
+    f32 FilmWidth = 1.0;
+    f32 FilmHeight = 1.0;
+    f32 HalfFilmW = 0.5 * FilmWidth;
+    f32 HalfFilmH = 0.5 * FilmHeight;
+    f32 FilmD = 1.0;
 
+    /*
+        THe Film is always represented in Normalized Device coordinates, so it's always referred to in -1, 1
+        but we place the film into the world and the films world coordinates are given by the "width", "height" essentially
 
+    */
 
 
     while(is_running == true)
     {
+
+        u32 *PixelPointer = Pixels;
+
+        for(u32 Y = 0; Y < Height; ++Y)
+        {
+            f32 FilmY = -1.0 + 2.0 * ((f32) Y / Height );
+            for(u32 X = 0; X < Width; ++X)
+            {
+                f32 FilmX = -1.0 + 2.0 * ((f32) X / Width );
+
+                v3f RayOrigin = CameraP;
+                v3f RayDirection = Normalize(-CameraZ * FilmD             +
+                                              CameraX * FilmX * HalfFilmW +
+                                              CameraY * FilmY * HalfFilmH  )
+
+
+
+                *PixelPointer++ = 0xFF33FF00;
+            }
+        }
+
+
         SDL_Event event;
         SDL_PollEvent(&event);
         switch(event.type)
@@ -123,14 +163,6 @@ int main(int ArgCount, char **Args)
         }
 
 
-        u32 *PixelPointer = Pixels;
-        for(u32 Row = 0; Row < Height; ++Row)
-        {
-            for(u32 Col = 0; Col < Width; ++Col)
-            {
-                *PixelPointer++ = 0xFF33FF00;
-            }
-        }
 
 
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
